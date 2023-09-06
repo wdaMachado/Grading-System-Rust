@@ -130,7 +130,3 @@ fn situacao_estudante(vetor: Vec<f32>, nome_vetor: Vec<String>){
         iterador+=1;        
     }
 }
-
-fn implementador_notas(){
-
-}
