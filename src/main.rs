@@ -8,9 +8,10 @@ fn funcional() {
 
     let alunos_string;
     let alunos_numero: u8;
-    //let mut alunos_vetor = Vec::new();
-    let mut alunos_vetor: Vec<f32> = vec![];
-    //let mut nome_vetor = Vec::new();
+    let mut notas_matematica: Vec<f32> = vec![];
+    let mut notas_portugues: Vec<f32> = vec![];
+    let mut notas_historia: Vec<f32> = vec![];
+    let mut notas_ciencias: Vec<f32> = vec![];
     let mut nome_vetor: Vec<String> = vec![];
     let vec_materia: Vec<String> = vec!["Matemática".to_string(),"Português".to_string(), "História".to_string(), "Ciências".to_string()];
 
@@ -21,7 +22,7 @@ fn funcional() {
     alunos_string = leitura_dados();
     alunos_numero = to_int(alunos_string);
 
-    println!("Agora vou precisar que me diga quais foram as notas de cada um deles.");
+    println!("Vou precisar que me diga os nomes e quais foram as notas de cada um deles.");
 
     let mut i = 1;
     let mut nota_string: String;
@@ -30,34 +31,54 @@ fn funcional() {
 
     while i <= alunos_numero{
         println!("\nFavor digite o nome do {i}° estudante: ");
-
         nome_estudante = leitura_dados();
         nome_vetor.push(nome_estudante);
-        for j in vec_materia.iter(){
-            println!("Favor digite a nota do {i}° estudante em {j}: ");
+        for materia in vec_materia.iter(){
+            println!("Favor digite a nota do {i}° estudante em {materia}: ");
             nota_string = leitura_dados();
             nota_float = to_float(nota_string);
-            alunos_vetor.push(nota_float);}
+            if materia == "Matemática"{ 
+                notas_matematica.push(nota_float);
+            } else if materia == "Português"{
+                notas_portugues.push(nota_float);
+            } else if materia == "História"{
+                notas_historia.push(nota_float);
+            } else if materia == "Ciências"{
+                notas_ciencias.push(nota_float);
+            } else {
+                println!("Matéria não cadastrada!")
+            }
+        }
+
+
         i+=1;
     }
 
-    /*i = 1;
-    while i <= alunos_numero{
- 
-        i+=1;
-    }*/
+    let media_matematica: f32 = media(notas_matematica.clone(), vec_materia.clone(),"Matemática".to_string());
+    let media_portugues : f32 = media(notas_portugues.clone(), vec_materia.clone(),"Português".to_string());
+    let media_historia  : f32 = media(notas_historia.clone(), vec_materia.clone(),"História".to_string());
+    let media_ciencias  : f32 = media(notas_ciencias.clone(), vec_materia.clone(),"Ciências".to_string());
 
-    
-    let media: f32 = media(alunos_vetor.clone());
-    println!("\nA média das notas de todos os alunos é: {media:.2}");
+    println!("\nA média das notas de todos os alunos em {:<9} é: {media_matematica:.2}",vec_materia[0]);
+    println!("A média das notas de todos os alunos em {:<9} é: {media_portugues:.2}",vec_materia[1]);
+    println!("A média das notas de todos os alunos em {:<9} é: {media_historia:.2}",vec_materia[2]);
+    println!("A média das notas de todos os alunos em {:<9} é: {media_ciencias:.2}",vec_materia[3]);
+    println!("-------------------------------------------------------");
 
-    menor_nota(alunos_vetor.clone(), nome_vetor.clone());
-    //println!("menor nota: {menor_nt}");
 
-    maior_nota(alunos_vetor.clone(), nome_vetor.clone());
-    //println!("maior nota: {maior_nt}");
+    menor_nota(notas_matematica.clone(), nome_vetor.clone(), vec_materia.clone(), "Matemática".to_string());
+    menor_nota(notas_portugues.clone(), nome_vetor.clone(), vec_materia.clone(), "Português".to_string());
+    menor_nota(notas_historia.clone(), nome_vetor.clone(), vec_materia.clone(), "História".to_string());
+    menor_nota(notas_ciencias.clone(), nome_vetor.clone(), vec_materia.clone(), "Ciências".to_string());
+    println!("-------------------------------------------------------");
 
-    situacao_estudante(alunos_vetor.clone(), nome_vetor.clone());
+    maior_nota(notas_matematica.clone(), nome_vetor.clone(), vec_materia.clone(), "Matemática".to_string());
+    maior_nota(notas_portugues.clone(), nome_vetor.clone(), vec_materia.clone(), "Português".to_string());
+    maior_nota(notas_historia.clone(), nome_vetor.clone(), vec_materia.clone(), "História".to_string());
+    maior_nota(notas_ciencias.clone(), nome_vetor.clone(), vec_materia.clone(), "Ciências".to_string());
+    println!("-------------------------------------------------------");
+
+    situacao_estudante(notas_matematica.clone(),notas_portugues.clone(),notas_historia.clone(),notas_ciencias.clone(), nome_vetor, vec_materia);
 
 }
 
@@ -77,36 +98,60 @@ fn to_float(dado_string: String)-> f32 {
     return dado_float;
 }
 
-fn media(vetor: Vec<f32>)-> f32{
+fn media(vetor: Vec<f32>, vetor_nome_materias: Vec<String>, materia: String)-> f32{
     let mut soma:f32 = 0.0;
     let mut media:f32 = 0.0;
     let mut iterador = 0;
+    let mut nome_materia: String = "".to_string();
+    for i in vetor_nome_materias{
+        if i == materia{
+            nome_materia = i;
+        } else {
+            continue;
+        }
+    }
     for i in vetor.iter(){
         soma += vetor[iterador];
         iterador +=1;
     }
     media = soma/(vetor.len() as f32);
-    return media;
+    media
 }
 
-fn menor_nota(vetor: Vec<f32>, vetor_nome: Vec<String>){
+fn menor_nota(vetor_notas: Vec<f32>, vetor_nome: Vec<String>, vetor_nome_materias: Vec<String>,materia: String){
     let mut menor: f32 = 100.00;
     let mut iterador = 0;
     let mut index: usize = 100;
-    for i in vetor.iter(){
-        if menor > vetor[iterador] {
-            menor = vetor[iterador];
+    let mut nome_materia: String = "Não encontrada matéria".to_string();
+    for i in vetor_nome_materias{
+        if i == materia{
+            nome_materia = i;
+        } else {
+            continue;
+        }
+    }
+    for nota in vetor_notas.iter(){
+        if menor > vetor_notas[iterador] {
+            menor = vetor_notas[iterador];
             index = iterador; 
         }
         iterador +=1;
     }
-    println!("O aluno {} tem a menor nota: {:.2}", vetor_nome[index] , menor);
+    println!("O aluno {:<10} tem a menor nota em {:<10}: {:.2}", vetor_nome[index], nome_materia, menor);
 }
 
-fn maior_nota(vetor: Vec<f32>, vetor_nome: Vec<String>){
+fn maior_nota(vetor: Vec<f32>, vetor_nome: Vec<String>, vetor_nome_materias: Vec<String>,materia: String){
     let mut maior: f32 = 0.0;
     let mut iterador = 0;
     let mut index: usize = 0;
+    let mut nome_materia: String = "Não encontrada matéria".to_string();
+    for i in vetor_nome_materias{
+        if i == materia{
+            nome_materia = i;
+        } else {
+            continue;
+        }
+    }
     for i in vetor.iter(){
         if maior < vetor[iterador] {
             maior = vetor[iterador];
@@ -114,19 +159,31 @@ fn maior_nota(vetor: Vec<f32>, vetor_nome: Vec<String>){
         }
         iterador +=1;
     }
-    println!("O aluno {} tem a maior nota: {:.2}", vetor_nome[index] , maior);
+    println!("O aluno {:<10} tem a maior nota em {:<10}: {:.2}", vetor_nome[index] , nome_materia,maior);
+}
+fn situacao_estudante(notas_materia1: Vec<f32>, notas_materia2: Vec<f32>, notas_materia3: Vec<f32>, notas_materia4: Vec<f32>, nome_vetor: Vec<String>, vetor_nome_materias: Vec<String>){ 
+    let mut index = 0;
+    let situacao_materia1: Vec<String> = situacao(notas_materia1.clone());
+    let situacao_materia2: Vec<String> = situacao(notas_materia2.clone());
+    let situacao_materia3: Vec<String> = situacao(notas_materia3.clone());
+    let situacao_materia4: Vec<String> = situacao(notas_materia4.clone());
+    println!("{:>10} |  Notas: {:>10}  |  {:>10} |  {:>10} |  {:>10} |","Alunos",vetor_nome_materias[0],vetor_nome_materias[1],vetor_nome_materias[2],vetor_nome_materias[3]);
+    for nome in nome_vetor.iter(){
+        println!("{:>10} |         {:<5.3} {:>5.2} | {:>5.3} {:>5.2} | {:>5.3} {:>5.2} | {:>5.3} {:>5.2} |", nome, situacao_materia1[index], notas_materia1[index], situacao_materia2[index], notas_materia2[index], situacao_materia3[index], notas_materia3[index], situacao_materia4[index], notas_materia4[index] );
+        index+=1;
+    }
 }
 
-fn situacao_estudante(vetor: Vec<f32>, nome_vetor: Vec<String>){
-    let mut iterador = 0;    
-    for i in vetor.iter(){
-        if vetor[iterador] >= 7.0 {
-            println!("Aluno: {:>10} | nota: {:>3.2} | Status: Aprovado    |", nome_vetor[iterador], vetor[iterador]);
-          } else if vetor[iterador] >= 4.0 && vetor[iterador] < 7.0 {
-            println!("Aluno: {:>10} | nota: {:>3.2} | Status: Recuperação |", nome_vetor[iterador], vetor[iterador]);
-          } else if vetor[iterador] < 4.0 {
-            println!("Aluno: {:>10} | nota: {:>3.2} | Status: Reprovado   |", nome_vetor[iterador], vetor[iterador]);
-          }
-        iterador+=1;        
+fn situacao(vetor_notas: Vec<f32>)-> Vec<String>{
+    let mut vetor_situacao: Vec<String> = vec![];
+    for nota in vetor_notas{
+        if nota>= 7.0{
+            vetor_situacao.push("Aprovado".to_string())
+        } else if nota < 7.0 && nota >= 4.0 {
+            vetor_situacao.push("Recuperação".to_string())
+        } else if nota< 4.0 {
+            vetor_situacao.push("Reprovado".to_string())
+        }
     }
+    vetor_situacao
 }
